@@ -75,9 +75,11 @@ public class ScreenCaptureActivity extends Activity {
 //        moveTaskToBack(true);//activity 隐藏
 
         markSizeView = findViewById(R.id.mark_size);
+
         markSizeView.setmOnClickListener(new MarkSizeView.onClickListener() {
             @Override
             public void onConfirm(Rect markedArea) {
+                //点击截屏后的"V"ic_done_white_36dp.png
                 ScreenCaptureActivity.this.markedArea = new Rect(markedArea);
                 markSizeView.reset();
                 markSizeView.setUnmarkedColor(getResources().getColor(R.color.transparent));
@@ -86,6 +88,7 @@ public class ScreenCaptureActivity extends Activity {
             }
             @Override
             public void onCancel() {
+                //点击截屏后的"X"ic_close_capture.png
             }
             @Override
             public void onTouch() {
@@ -99,6 +102,9 @@ public class ScreenCaptureActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_MEDIA_PROJECTION) {
             if (resultCode != Activity.RESULT_OK) {
+                //对取消录屏进行事件更新
+                onBackPressed();
+                Log.d("MainActivity","Screen:取消");
                 return;
             } else if (data != null && resultCode != 0) {
                 mResultCode = resultCode;
@@ -150,6 +156,8 @@ public class ScreenCaptureActivity extends Activity {
             bundle.putByteArray("bitmap", bytes);
 
             //在此标记耗时操作开始：转换文字是一个耗时操作
+            //开始更新UI(缓冲中....)
+
             Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo.class);
             intent.putExtras(bundle);
             startActivity(intent);
@@ -159,8 +167,10 @@ public class ScreenCaptureActivity extends Activity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startVirtual() {
         if (mMediaProjection != null) {
+            Log.d("MainActivity","Screen:立即开始1");
             virtualDisplay();
         } else {
+            Log.d("MainActivity","Screen:立即开始2");
             setUpMediaProjection();
             virtualDisplay();
         }
@@ -207,7 +217,6 @@ public class ScreenCaptureActivity extends Activity {
 //        handler.removeCallbacks(runnable);
         tearDownMediaProjection();
         Log.d("MainActivity","handler");
-
         super.onDestroy();
     }
 
