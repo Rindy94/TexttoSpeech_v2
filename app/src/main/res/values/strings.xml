@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">TTS</string>
-    <string name="describe">这是一个能将手机界面的文字转换为语音的软件。用户开启悬浮球，
-        手机自动完成以下授权：</string>>
-    <string name="permission1">获取录音</string>
-    <string name="permission2">获取录音</string>
-    <string name="permission3">获取录音</string>
+    <string name="describe">这是一个能将手机界面的文字转换为语音的软件。用户开启悬浮球，手机自动完成以下授权。</string>>
+    <string name="permission1">储存：修改或删除您的SD卡中的内容</string>
+    <string name="permission2">硬件控制：录音、控制震动</string>
+    <string name="permission3">系统工具：访问SD卡文件系统，在其他应用之上显示内容</string>
+    <string name="permission4">开发工具：测试对受保护存储空间的访问权限</string>
     <string name="describe_name">描述：</string>
 </resources>

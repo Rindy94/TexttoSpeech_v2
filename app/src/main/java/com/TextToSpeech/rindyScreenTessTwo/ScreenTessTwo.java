@@ -51,7 +51,7 @@ public class ScreenTessTwo extends Activity {
     private Bitmap Extra_bitmap;
     private String text;
 
-    private static final int UPDATE_UI = 1;
+//    private static final int UPDATE_UI = 1;
 
 //    @SuppressLint("HandlerLeak")
 //    private Handler handler = new Handler(){
@@ -68,9 +68,9 @@ public class ScreenTessTwo extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("MainActivity","onCreate");
-        Log.d("MainActivity", String.valueOf(start_time));
+        Log.d("MainActivity", "start_time:" + String.valueOf(start_time));
         setContentView(R.layout.tess_two_layout);
+//        setContentView(R.layout.activity_screen_capture);
         super.onCreate(savedInstanceState);
         //取出传递过来的bitmap
         Intent intent = getIntent();
@@ -108,7 +108,7 @@ public class ScreenTessTwo extends Activity {
         Log.d("MainActivity","ScreenTessTwo---" + text);
         if (text != ""){
             long end_time = System.currentTimeMillis();
-            Log.d("MainActivity", String.valueOf(end_time));
+            Log.d("MainActivity","end_time:" + String.valueOf(end_time));
             Intent in = new Intent(ScreenTessTwo.this,TTSmain.class);
             in.putExtra("extra_str",text);
             startActivity(in);

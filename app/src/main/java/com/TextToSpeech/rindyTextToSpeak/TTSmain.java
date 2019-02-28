@@ -17,7 +17,8 @@ public class TTSmain extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_capture);
+//        setContentView(R.layout.activity_screen_capture);
+//        setContentView(R.layout.tess_two_layout);
 
         Intent intent = getIntent();
         extra_text = intent.getStringExtra("extra_str");
@@ -30,12 +31,13 @@ public class TTSmain extends Activity {
         @Override
         public void onInit(int status) {
             if (status == TextToSpeech.SUCCESS){
-                Log.d("Main","初始化引擎成功");
-
+                Log.d("MainActivity","初始化引擎成功");
+                //读出文字内容
                 textToSpeech.setPitch(2f);
                 textToSpeech.speak(extra_text,TextToSpeech.QUEUE_FLUSH,null,"test_data");
+
             }else
-                Log.d("Main","初始化引擎失败");
+                Log.d("MainActivity","初始化引擎失败");
         }
     }
 

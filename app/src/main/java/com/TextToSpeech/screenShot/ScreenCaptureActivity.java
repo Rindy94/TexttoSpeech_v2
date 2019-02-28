@@ -10,6 +10,7 @@ package com.TextToSpeech.screenShot;
  * @date: 2019/1/2 12:02
  **/
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -55,9 +57,27 @@ public class ScreenCaptureActivity extends Activity {
     private MarkSizeView markSizeView;
     private Rect markedArea;
 
-    private Handler handler;
+//    private Handler handler;
     private Runnable runnable;
     private boolean exits = false;
+
+    public static final int UPDATE_TEXT = 1;
+
+    private Handler handler  = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_TEXT:
+                    //在这里进行UI更新操作
+                    startCapture();
+//                    setContentView(R.layout.tess_two_layout);
+//                    setContentView(R.layout.tess_two_layout);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -67,7 +87,7 @@ public class ScreenCaptureActivity extends Activity {
         mMediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         setContentView(R.layout.activity_screen_capture);
-
+//        setContentView(R.layout.tess_two_layout);
         //发起录屏的请求
         startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
 
@@ -87,7 +107,7 @@ public class ScreenCaptureActivity extends Activity {
                 startIntent();
             }
             @Override
-            public void onCancel() {
+             public void onCancel() {
                 //点击截屏后的"X"ic_close_capture.png
             }
             @Override
@@ -128,6 +148,7 @@ public class ScreenCaptureActivity extends Activity {
     }
 
     //处理截屏图片
+    @SuppressLint("HandlerLeak")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startCapture() {
         ScreenCaptureActivity.this.markedArea = new Rect(markedArea);
@@ -152,13 +173,13 @@ public class ScreenCaptureActivity extends Activity {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
             byte[] bytes=baos.toByteArray();
-            Bundle bundle = new Bundle();
+            final Bundle bundle = new Bundle();
             bundle.putByteArray("bitmap", bytes);
 
             //在此标记耗时操作开始：转换文字是一个耗时操作
             //开始更新UI(缓冲中....)
-
             Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo.class);
+            setContentView(R.layout.tess_two_layout);
             intent.putExtras(bundle);
             startActivity(intent);
         }
@@ -196,20 +217,35 @@ public class ScreenCaptureActivity extends Activity {
         }
     }
 
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startIntent() {
-        handler = new Handler();
-        runnable = new Runnable() {
+
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    startCapture();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Message message = new Message();
+                message.what = UPDATE_TEXT;
+                handler.sendMessage(message);
             }
-        };
-        handler.post(runnable);
+        }).start();
+//        handler = new Handler();
+//        runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    //更新UI
+//                    Message message = new Message();
+//                    message.what = UPDATE_TEXT;
+//                    handler.sendMessage(message);
+//                    startCapture();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        handler.post(runnable);
     }
 
     @Override
