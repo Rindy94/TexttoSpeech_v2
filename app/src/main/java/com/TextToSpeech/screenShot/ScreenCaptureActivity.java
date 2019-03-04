@@ -61,23 +61,23 @@ public class ScreenCaptureActivity extends Activity {
     private Runnable runnable;
     private boolean exits = false;
 
-    public static final int UPDATE_TEXT = 1;
+//    public static final int UPDATE_TEXT = 1;
 
-    private Handler handler  = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case UPDATE_TEXT:
-                    //在这里进行UI更新操作
-                    startCapture();
+//    @SuppressLint("HandlerLeak")
+//    private Handler handler  = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switch (msg.what){
+//                case UPDATE_TEXT:
+//                    //在这里进行UI更新操作
 //                    setContentView(R.layout.tess_two_layout);
-//                    setContentView(R.layout.tess_two_layout);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };;
+//                    Log.d("MainActivity","ScreenCA----handleMessage");
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//    };
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -179,10 +179,12 @@ public class ScreenCaptureActivity extends Activity {
             //在此标记耗时操作开始：转换文字是一个耗时操作
             //开始更新UI(缓冲中....)
             Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo.class);
-            setContentView(R.layout.tess_two_layout);
+//            setContentView(R.layout.tess_two_layout);
             intent.putExtras(bundle);
             startActivity(intent);
+            finishAndRemoveTask();
         }
+//        onDestroy();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -225,40 +227,31 @@ public class ScreenCaptureActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Message message = new Message();
-                message.what = UPDATE_TEXT;
-                handler.sendMessage(message);
+//                Message message = new Message();
+//                message.what = UPDATE_TEXT;
+//                handler.sendMessage(message);
+                startCapture();
             }
         }).start();
-//        handler = new Handler();
-//        runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    //更新UI
-//                    Message message = new Message();
-//                    message.what = UPDATE_TEXT;
-//                    handler.sendMessage(message);
-//                    startCapture();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//        handler.post(runnable);
     }
 
+    @SuppressLint("MissingSuperCall")
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onDestroy() {
+        Log.d("MainActivity","ScreenCaptureActivity---onDestory");
 //        handler.removeCallbacks(runnable);
         tearDownMediaProjection();
-        Log.d("MainActivity","handler");
+//        finishAndRemoveTask();
         super.onDestroy();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
+        Log.d("MainActivity","ScreenCaptureActivity---onBackPressed");
         tearDownMediaProjection();
+//        finishAndRemoveTask();
         super.onBackPressed();
     }
 }

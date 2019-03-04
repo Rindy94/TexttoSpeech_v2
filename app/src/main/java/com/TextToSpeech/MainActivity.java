@@ -13,7 +13,10 @@ package com.TextToSpeech;
  **/
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch_open = findViewById(R.id.switch_floating_ball);
         boolean toogle = Utils.isServiceWork(getApplicationContext(),FloatService.class.getName());
+
         if (toogle == true){
             switch_open.setText("ON ");
             switch_open.setChecked(true);
@@ -43,28 +47,68 @@ public class MainActivity extends AppCompatActivity {
             switch_open.setText("OFF ");
             switch_open.setChecked(false);
         }
-        switch_open.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d("MainActivity","onCheckedChanged()");
-                if (isChecked){
-                    startService(new Intent(MainActivity.this,FloatService.class));
-                    Toast.makeText(MainActivity.this,"Srevice Ongoing",Toast.LENGTH_SHORT).show();
-                    switch_open.setText("ON ");
-                }else {
-                    stopService(new Intent(MainActivity.this,FloatService.class));
-                    FloatViewManager.create(getApplicationContext()).remove();
-                    Toast.makeText(MainActivity.this,"Service Off",Toast.LENGTH_SHORT).show();
-                    switch_open.setText("OFF ");
-                }
-            }
-        });
+
+        date();
+//        switch_open.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                Log.d("MainActivity","onCheckedChanged()");
+//                if (isChecked){
+//                    startService(new Intent(MainActivity.this,FloatService.class));
+//                    Toast.makeText(MainActivity.this,"Srevice Ongoing",Toast.LENGTH_SHORT).show();
+//                    switch_open.setText("ON ");
+//                }else {
+//                    stopService(new Intent(MainActivity.this,FloatService.class));
+//                    FloatViewManager.create(getApplicationContext()).remove();
+//                    Toast.makeText(MainActivity.this,"Service Off",Toast.LENGTH_SHORT).show();
+//                    switch_open.setText("OFF ");
+//                }
+//            }
+//        });
+    }
+
+    private void date(){
+        SharedPreferences shared = getSharedPreferences("is",MODE_PRIVATE);
+        boolean isfre = shared.getBoolean("isfer",true);
+        SharedPreferences.Editor editor = shared.edit();
+        if (isfre){
+            //第一次进入跳转，提醒用户开启权限：允许访问顶层显示权限
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getApplicationContext().getApplicationContext().getPackageName()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+
+            switch_open.setOnCheckedChangeListener(new myOnCheckedChangeListener());
+
+            editor.putBoolean("isfer", false);
+            editor.commit();
+        }else {
+            //第二次进入跳转(除非卸载之后重新安装，否则都属于二次进入)
+            switch_open.setOnCheckedChangeListener(new myOnCheckedChangeListener());
+        }
     }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         if (switch_open.getText().toString() == "OFF"){
             android.os.Process.killProcess(android.os.Process.myPid());
+        }
+    }
+
+    class myOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener{
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            Log.d("MainActivity","onCheckedChanged()");
+            if (isChecked){
+                startService(new Intent(MainActivity.this,FloatService.class));
+                Toast.makeText(MainActivity.this,"Srevice Ongoing",Toast.LENGTH_SHORT).show();
+                switch_open.setText("ON ");
+            }else {
+                stopService(new Intent(MainActivity.this,FloatService.class));
+                FloatViewManager.create(getApplicationContext()).remove();
+                Toast.makeText(MainActivity.this,"Service Off",Toast.LENGTH_SHORT).show();
+                switch_open.setText("OFF ");
+            }
         }
     }
 }

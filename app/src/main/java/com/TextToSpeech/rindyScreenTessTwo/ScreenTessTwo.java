@@ -4,20 +4,32 @@ package com.TextToSpeech.rindyScreenTessTwo;
  * 使用Android的tess-two:参考https://www.jianshu.com/p/cc9ae05423a8
  *  tess-two 可以将bitmap中的文字提取出来。
  *  bitmap的传递： byte
+ *
+ *  这个类是一个耗时操作
+ *
+ *
  * @author: Rindy
  * @date: 2019/1/21 14:29
  **/
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.speech.tts.UtteranceProgressListener;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.TextToSpeech.rindyTextToSpeak.TTSServices;
 import com.TextToSpeech.rindyTextToSpeak.TTSmain;
 import com.TextToSpeech.rindyTextToSpeech.R;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -27,8 +39,6 @@ import java.io.File;
 import static com.TextToSpeech.rindyScreenTessTwo.SDUtils.assets2SD;
 
 public class ScreenTessTwo extends Activity {
-
-    private long start_time = System.currentTimeMillis();
 
     //TessBaseAPI初始化用到的第一个参数，是个目录。
     private static final String DATAPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
@@ -51,75 +61,78 @@ public class ScreenTessTwo extends Activity {
     private Bitmap Extra_bitmap;
     private String text;
 
-//    private static final int UPDATE_UI = 1;
+    private static final int UPDATE_UI = 1;
 
-//    @SuppressLint("HandlerLeak")
-//    private Handler handler = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            switch (msg.what){
-//                case UPDATE_UI:
-//                    break;
-//                    default:
-//                        break;
-//            }
-//        }
-//    };
+//    private Intent in_tts;
 
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_UI:
+                    setContentView(R.layout.tess_two_layout);
+                    Log.d("MainActivity","ScreentessTwo----handleMessage");
+                    break;
+                    default:
+                        break;
+            }
+        }
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("MainActivity", "start_time:" + String.valueOf(start_time));
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.tess_two_layout);
 //        setContentView(R.layout.activity_screen_capture);
-        super.onCreate(savedInstanceState);
         //取出传递过来的bitmap
         Intent intent = getIntent();
-        Bundle b=intent.getExtras();
-        byte[] bytes=b.getByteArray("bitmap");
+        Bundle b = intent.getExtras();
+        byte[] bytes = b.getByteArray("bitmap");
         Extra_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        TessBaseAPI tessBaseAPI = new TessBaseAPI();
 
-        if (!checkTraineddataExists()){
-//                    Toast.makeText(getApplicationContext(),LANGUAGE_PATH+"不存在，开始复制",Toast.LENGTH_LONG).show();
-            assets2SD(getApplicationContext(), LANGUAGE_PATH, DEFAULT_LANGUAGE_NAME);
-        }
-//                Toast.makeText(getApplicationContext(),"正在识别文字",Toast.LENGTH_LONG).show();
-        tessBaseAPI.init(DATAPATH, DEFAULT_LANGUAGE);
-        tessBaseAPI.setImage(Extra_bitmap);
-        text = tessBaseAPI.getUTF8Text();
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Message message = new Message();
-//                message.what = UPDATE_UI;
-//                handler.sendMessage(message);
-//            }
-//        }).start();
-//        Handler handler = new Handler();
-//        handler.postAtTime(new Runnable() {
-//            @Override
-//            public void run() {
-//                Message message = new Message();
-//                message.what = UPDATE_UI;
-//                handler.sendMessage(message);
-//            }
-//        },start_time);
-        Log.d("MainActivity","ScreenTessTwo---" + text);
-        if (text != ""){
-            long end_time = System.currentTimeMillis();
-            Log.d("MainActivity","end_time:" + String.valueOf(end_time));
-            Intent in = new Intent(ScreenTessTwo.this,TTSmain.class);
-            in.putExtra("extra_str",text);
-            startActivity(in);
-        }else
-            Toast.makeText(getApplicationContext(),"没有识别到文字，请重新选取文字内容",Toast.LENGTH_LONG).show();
-        tessBaseAPI.end();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.what = UPDATE_UI;
+                handler.sendMessage(message);
+                tessData();
+            }
+        }).start();
+//        onDestroy();
     }
 
     public boolean checkTraineddataExists(){
         File file = new File(LANGUAGE_PATH);
         return file.exists();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void tessData(){
+        TessBaseAPI tessBaseAPI = new TessBaseAPI();
+
+        if (!checkTraineddataExists()) {
+            assets2SD(getApplicationContext(), LANGUAGE_PATH, DEFAULT_LANGUAGE_NAME);
+        }
+        tessBaseAPI.init(DATAPATH, DEFAULT_LANGUAGE);
+        tessBaseAPI.setImage(Extra_bitmap);
+        text = tessBaseAPI.getUTF8Text();
+
+        Log.d("MainActivity", "ScreenTessTwo---" + text);
+        if (text != "") {
+            Intent in = new Intent(ScreenTessTwo.this, TTSmain.class);
+            in.putExtra("extra_str", text);
+            startActivity(in);
+
+//            Intent in_tts = new Intent(this,TTSServices.class);
+//            in_tts.putExtra("extra_str", text);
+//            startService(in_tts);
+        } else
+            Toast.makeText(getApplicationContext(), "没有识别到文字，请重新选取文字内容", Toast.LENGTH_LONG).show();
+        tessBaseAPI.end();
+        finishAndRemoveTask();
     }
 
     @Override
@@ -136,9 +149,20 @@ public class ScreenTessTwo extends Activity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        Log.d("MainActivity","ScreenTessTwo---onDestroy()");
-        super.onDestroy();
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//    @Override
+//    protected void onDestroy() {
+//        Log.d("MainActivity","ScreenTessTwo---onDestroy()");
+//        finishAndRemoveTask();
+//        super.onDestroy();
+//    }
+//
+//    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//    @Override
+//    public void onBackPressed() {
+//        Log.d("MainActivity","ScreenTessTwo---onBackPressed()");
+//        finishAndRemoveTask();
+//        super.onBackPressed();
+//    }
 }
