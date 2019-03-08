@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Vibrator;
+import android.support.annotation.MainThread;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -14,7 +15,12 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
 import com.TextToSpeech.Utils;
+import com.TextToSpeech.rindyTextToSpeak.TTSmain;
 import com.TextToSpeech.screenShot.ScreenCaptureActivity;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.ref.WeakReference;
 
@@ -34,7 +40,7 @@ public class FloatViewManager {
     private WindowManager mManager;
     private Point p = new Point();
     private int base;
-    FloatView mfloatView;
+    public FloatView mfloatView;
 
     private boolean isClick;
     private int mDownX, mDownY, mLastX, mLastY;
@@ -51,7 +57,7 @@ public class FloatViewManager {
     private int time;
     private  Intent intent;
 
-    private FloatViewManager(){
+    public FloatViewManager(){
         mParams = new WindowManager.LayoutParams();
         mManager = (WindowManager)mContext.get().getSystemService(mContext.get().WINDOW_SERVICE);
         mParams.type = WindowManager.LayoutParams.TYPE_TOAST;
@@ -100,6 +106,9 @@ public class FloatViewManager {
             public boolean onLongClick(View v) {
                 if ( isClick==true){
                     vibrator.vibrate(time);
+                    //隐藏悬浮球
+                    mfloatView.setVisibility(View.GONE);
+
                     intent = new Intent(mContext.get(),ScreenCaptureActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.get().startActivity(intent);

@@ -30,10 +30,17 @@ import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
+import com.TextToSpeech.rindyFloatBall.FloatViewManager;
 import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo;
+import com.TextToSpeech.rindyTextToSpeak.TTSmain;
 import com.TextToSpeech.rindyTextToSpeech.R;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -58,7 +65,7 @@ public class ScreenCaptureActivity extends Activity {
     private Rect markedArea;
 
 //    private Handler handler;
-    private Runnable runnable;
+//    private Runnable runnable;
     private boolean exits = false;
 
 //    public static final int UPDATE_TEXT = 1;
@@ -87,7 +94,7 @@ public class ScreenCaptureActivity extends Activity {
         mMediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         setContentView(R.layout.activity_screen_capture);
-//        setContentView(R.layout.tess_two_layout);
+
         //发起录屏的请求
         startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
 
@@ -99,7 +106,7 @@ public class ScreenCaptureActivity extends Activity {
         markSizeView.setmOnClickListener(new MarkSizeView.onClickListener() {
             @Override
             public void onConfirm(Rect markedArea) {
-                //点击截屏后的"V"ic_done_white_36dp.png
+                //点击截屏后的"V"--ic_done_white_36dp.png
                 ScreenCaptureActivity.this.markedArea = new Rect(markedArea);
                 markSizeView.reset();
                 markSizeView.setUnmarkedColor(getResources().getColor(R.color.transparent));
@@ -108,7 +115,7 @@ public class ScreenCaptureActivity extends Activity {
             }
             @Override
              public void onCancel() {
-                //点击截屏后的"X"ic_close_capture.png
+                //点击截屏后的"X"--ic_close_capture.png
             }
             @Override
             public void onTouch() {
@@ -179,12 +186,10 @@ public class ScreenCaptureActivity extends Activity {
             //在此标记耗时操作开始：转换文字是一个耗时操作
             //开始更新UI(缓冲中....)
             Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo.class);
-//            setContentView(R.layout.tess_two_layout);
             intent.putExtras(bundle);
             startActivity(intent);
             finishAndRemoveTask();
         }
-//        onDestroy();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -251,7 +256,8 @@ public class ScreenCaptureActivity extends Activity {
     public void onBackPressed() {
         Log.d("MainActivity","ScreenCaptureActivity---onBackPressed");
         tearDownMediaProjection();
-//        finishAndRemoveTask();
+        FloatViewManager.create(getApplicationContext()).mfloatView.setVisibility(View.VISIBLE);
         super.onBackPressed();
     }
+
 }

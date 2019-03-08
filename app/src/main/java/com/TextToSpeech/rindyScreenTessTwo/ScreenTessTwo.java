@@ -7,6 +7,8 @@ package com.TextToSpeech.rindyScreenTessTwo;
  *
  *  这个类是一个耗时操作
  *
+ *  按下两次BACK键退出应用,并通知TTSmain方法结束读语音操作
+ *
  *
  * @author: Rindy
  * @date: 2019/1/21 14:29
@@ -27,12 +29,17 @@ import android.os.Message;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Toast;
 
-import com.TextToSpeech.rindyTextToSpeak.TTSServices;
+import com.TextToSpeech.rindyFloatBall.FloatViewManager;
 import com.TextToSpeech.rindyTextToSpeak.TTSmain;
 import com.TextToSpeech.rindyTextToSpeech.R;
 import com.googlecode.tesseract.android.TessBaseAPI;
+
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -62,6 +69,13 @@ public class ScreenTessTwo extends Activity {
     private String text;
 
     private static final int UPDATE_UI = 1;
+    private static final int UPDATE_JUMP = 0;
+    private TessBaseAPI tessBaseAPI = new TessBaseAPI();
+    private Runnable runnable;
+    private Thread thread;
+
+    private static boolean isExit = false;
+    private static boolean isJump = true;
 
 //    private Intent in_tts;
 
@@ -72,8 +86,14 @@ public class ScreenTessTwo extends Activity {
             switch (msg.what){
                 case UPDATE_UI:
                     setContentView(R.layout.tess_two_layout);
+                    isExit = false;
                     Log.d("MainActivity","ScreentessTwo----handleMessage");
                     break;
+//                case UPDATE_JUMP:
+//                    Intent in = new Intent(ScreenTessTwo.this, TTSmain.class);
+//                    in.putExtra("extra_str", text);
+//                    startActivity(in);
+//                    break;
                     default:
                         break;
             }
@@ -85,14 +105,14 @@ public class ScreenTessTwo extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tess_two_layout);
-//        setContentView(R.layout.activity_screen_capture);
+
         //取出传递过来的bitmap
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
         byte[] bytes = b.getByteArray("bitmap");
         Extra_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-        new Thread(new Runnable() {
+        runnable = new Runnable() {
             @Override
             public void run() {
                 Message message = new Message();
@@ -100,8 +120,9 @@ public class ScreenTessTwo extends Activity {
                 handler.sendMessage(message);
                 tessData();
             }
-        }).start();
-//        onDestroy();
+        };
+        thread = new Thread(runnable);
+        thread.start();
     }
 
     public boolean checkTraineddataExists(){
@@ -111,7 +132,6 @@ public class ScreenTessTwo extends Activity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void tessData(){
-        TessBaseAPI tessBaseAPI = new TessBaseAPI();
 
         if (!checkTraineddataExists()) {
             assets2SD(getApplicationContext(), LANGUAGE_PATH, DEFAULT_LANGUAGE_NAME);
@@ -120,16 +140,23 @@ public class ScreenTessTwo extends Activity {
         tessBaseAPI.setImage(Extra_bitmap);
         text = tessBaseAPI.getUTF8Text();
 
-        Log.d("MainActivity", "ScreenTessTwo---" + text);
-        if (text != "") {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Message message = new Message();
+//                message.what = UPDATE_JUMP;
+//                handler.sendMessage(message);
+//            }
+//        }).start();   && isJump == true
+        if (text != null ) {
+            isJump = true;
+            Log.d("MainActivity", "ScreenTessTwo---" + text);
             Intent in = new Intent(ScreenTessTwo.this, TTSmain.class);
             in.putExtra("extra_str", text);
             startActivity(in);
-
-//            Intent in_tts = new Intent(this,TTSServices.class);
-//            in_tts.putExtra("extra_str", text);
-//            startService(in_tts);
         } else
+//            thread.interrupt();
+
             Toast.makeText(getApplicationContext(), "没有识别到文字，请重新选取文字内容", Toast.LENGTH_LONG).show();
         tessBaseAPI.end();
         finishAndRemoveTask();
@@ -149,20 +176,47 @@ public class ScreenTessTwo extends Activity {
         }
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//    @Override
-//    protected void onDestroy() {
-//        Log.d("MainActivity","ScreenTessTwo---onDestroy()");
-//        finishAndRemoveTask();
-//        super.onDestroy();
-//    }
-//
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            exit();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onDestroy() {
+        Log.d("MainActivity","ScreenTessTwo---onDestroy()");
+        super.onDestroy();
+    }
+
 //    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 //    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 //    @Override
 //    public void onBackPressed() {
 //        Log.d("MainActivity","ScreenTessTwo---onBackPressed()");
-//        finishAndRemoveTask();
+////        Toast.makeText(ScreenTessTwo.this,"正在读取文字...",Toast.LENGTH_LONG).show();
+////        this.finish();
+////        EventBus.getDefault().post(new TTSmain.MessageEvent("BACK"));
+////        finish();
 //        super.onBackPressed();
 //    }
+
+    private void exit(){
+        if(!isExit){
+            isExit = true;
+            Toast.makeText(getApplicationContext(),"再按一次退出当前识别",Toast.LENGTH_SHORT).show();
+            handler.sendEmptyMessageDelayed(0,2000);
+        }else {
+            Log.d("MainActivity", "ScreenTessTwo----exit()");
+            FloatViewManager.create(getApplicationContext()).mfloatView.setVisibility(View.VISIBLE);
+            thread.interrupt();
+//            synchronized (this) {
+//                isJump = false;
+//            }
+            this.finish();
+        }
+    }
 }

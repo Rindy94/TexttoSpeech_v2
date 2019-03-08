@@ -6,4 +6,5 @@
     <string name="permission3">系统工具：访问SD卡文件系统，在其他应用之上显示内容</string>
     <string name="permission4">开发工具：测试对受保护存储空间的访问权限</string>
     <string name="describe_name">描述：</string>
+    <string name="version">TTS_ver1.0@Rindy</string>
 </resources>

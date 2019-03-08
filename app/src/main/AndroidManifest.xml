@@ -35,6 +35,8 @@
         <service android:name="com.TextToSpeech.rindyFloatServices.FloatService"
             android:priority="1000"/>
 
+        <service android:name="com.TextToSpeech.rindyTextToSpeak.TTSServices"/>
+
         <activity android:name="com.TextToSpeech.screenShot.ScreenCaptureActivity"
             android:excludeFromRecents="true"
             android:configChanges="orientation|keyboardHidden|keyboard"
