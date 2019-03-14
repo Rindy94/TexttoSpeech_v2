@@ -35,6 +35,7 @@ import android.view.WindowManager;
 
 import com.TextToSpeech.rindyFloatBall.FloatViewManager;
 import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo;
+import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo_v1;
 import com.TextToSpeech.rindyTextToSpeak.TTSmain;
 import com.TextToSpeech.rindyTextToSpeech.R;
 
@@ -185,7 +186,7 @@ public class ScreenCaptureActivity extends Activity {
 
             //在此标记耗时操作开始：转换文字是一个耗时操作
             //开始更新UI(缓冲中....)
-            Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo.class);
+            Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo_v1.class);
             intent.putExtras(bundle);
             startActivity(intent);
             finishAndRemoveTask();

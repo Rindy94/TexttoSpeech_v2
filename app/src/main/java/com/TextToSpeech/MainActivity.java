@@ -25,13 +25,21 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.TextToSpeech.component.SimpleComponent;
 import com.TextToSpeech.rindyFloatBall.FloatView;
 import com.TextToSpeech.rindyFloatBall.FloatViewManager;
 import com.TextToSpeech.rindyFloatServices.FloatService;
 import com.TextToSpeech.rindyTextToSpeech.R;
+import com.example.ndh.myguideview.Component;
+import com.example.ndh.myguideview.Guide;
+import com.example.ndh.myguideview.GuideBuilder;
 
 public class MainActivity extends AppCompatActivity {
     Switch switch_open;
+
+    GuideBuilder guideBuilder =new GuideBuilder();
+    Guide guide;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         date();
+    /*    new Thread(new Runnable() {
+            @Override
+            public void run() {
+                guideView();
+            }
+        }).start();
+        */
 //        switch_open.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            @Override
 //            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -110,5 +125,27 @@ public class MainActivity extends AppCompatActivity {
                 switch_open.setText("OFF ");
             }
         }
+    }
+
+    private void guideView(){
+        GuideBuilder builder = new GuideBuilder();
+
+        builder.setTargetViewId(R.layout.main_layout)
+                .setAlpha(150)
+                .setHighTargetCorner(20)
+                .setHighTargetPadding(10)
+                .setOverlayTarget(false)
+                .setOutsideTouchable(false);
+        builder.setOnVisibilityChangedListener(new GuideBuilder.OnVisibilityChangedListener() {
+            @Override public void onShown() {
+            }
+
+            @Override public void onDismiss() {
+            }
+        });
+        builder.addComponent( new SimpleComponent());
+        guide = builder.createGuide();
+        guide.setShouldCheckLocInWindow(true);
+        guide.show(this);
     }
 }

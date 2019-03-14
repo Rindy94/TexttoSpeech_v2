@@ -7,4 +7,7 @@
     <string name="permission4">开发工具：测试对受保护存储空间的访问权限</string>
     <string name="describe_name">描述：</string>
     <string name="version">TTS_ver1.0@Rindy</string>
+
+    <string name="add_friend">添加好友在这里哦</string>
+    <string name="nearby">查看附近的人</string>
 </resources>

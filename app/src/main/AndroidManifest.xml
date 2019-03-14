@@ -55,5 +55,10 @@
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
 
+        <activity android:name="com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo_v1"
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+
     </application>
 </manifest>
