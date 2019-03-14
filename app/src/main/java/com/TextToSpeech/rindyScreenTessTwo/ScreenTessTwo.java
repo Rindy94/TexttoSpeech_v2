@@ -1,6 +1,7 @@
 package com.TextToSpeech.rindyScreenTessTwo;
 
 /**
+ * 该类已作废！！！ 2019年3月12日
  * 使用Android的tess-two:参考https://www.jianshu.com/p/cc9ae05423a8
  *  tess-two 可以将bitmap中的文字提取出来。
  *  bitmap的传递： byte
