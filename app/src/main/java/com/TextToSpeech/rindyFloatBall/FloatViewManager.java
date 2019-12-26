@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Vibrator;
 import android.support.annotation.MainThread;
 import android.util.Log;
@@ -48,7 +49,7 @@ public class FloatViewManager {
     int deltaY;
     /**
      *ViewConfiguration.getScaledTouchSlop();触发移动事件的最小距离，自定义View处理touch事件的时候，
-     *          有的时候需要判断用户是否真的存在movie，系统提供了这样的方法。表示滑动的时候，手的移
+     *          有的时候需要判断用户是否真的存在move，系统提供了这样的方法。表示滑动的时候，手的移
      *          动要大于这个返回的距离值才开始移动控件。
      * @date: 2018/12/27 16:45
      **/
@@ -60,10 +61,18 @@ public class FloatViewManager {
     public FloatViewManager(){
         mParams = new WindowManager.LayoutParams();
         mManager = (WindowManager)mContext.get().getSystemService(mContext.get().WINDOW_SERVICE);
-        mParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+//        mParams.type =WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
         mParams.format = PixelFormat.RGBA_8888;
         mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mParams.gravity = Gravity.TOP | Gravity.LEFT;
+
+        //Redmi手机Android6.0+适配
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }else {
+            mParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
+
         p = Utils.getScreenSize(mContext.get());
         base = Utils.dp2pix(mContext.get(),base);
         mTouchSlop = ViewConfiguration.get(mContext.get()).getScaledTouchSlop();
@@ -110,6 +119,7 @@ public class FloatViewManager {
                     mfloatView.setVisibility(View.GONE);
 
                     intent = new Intent(mContext.get(),ScreenCaptureActivity.class);
+
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.get().startActivity(intent);
                 }

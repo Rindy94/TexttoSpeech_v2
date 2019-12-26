@@ -234,8 +234,6 @@ public class MarkSizeView extends View {
                         confirmArea.set(endX - confirmBitmap.getWidth() - mActionGap, endY + mActionGap, endX - mActionGap, endY + confirmBitmap.getHeight() + mActionGap);
                         cancelArea.set(endX - 2 * confirmBitmap.getWidth() - mActionGap * 2, endY + mActionGap, endX - confirmBitmap.getWidth() - mActionGap * 2, endY + confirmBitmap.getHeight() + mActionGap);
                     }
-
-
                     if (cancelArea.left < 0){
                         int cancelAreaLeftMargin = Math.abs(cancelArea.left) + mActionGap;
                         cancelArea.left = cancelArea.left + cancelAreaLeftMargin;

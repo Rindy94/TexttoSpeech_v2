@@ -25,8 +25,6 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,16 +32,11 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.TextToSpeech.rindyFloatBall.FloatViewManager;
-import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo;
-import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo_v1;
-import com.TextToSpeech.rindyTextToSpeak.TTSmain;
+import com.TextToSpeech.rindyScreenTessTwo.ScreenTessTwo_v2;
 import com.TextToSpeech.rindyTextToSpeech.R;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ScreenCaptureActivity extends Activity {
@@ -65,33 +58,13 @@ public class ScreenCaptureActivity extends Activity {
     private MarkSizeView markSizeView;
     private Rect markedArea;
 
-//    private Handler handler;
-//    private Runnable runnable;
     private boolean exits = false;
-
-//    public static final int UPDATE_TEXT = 1;
-
-//    @SuppressLint("HandlerLeak")
-//    private Handler handler  = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            switch (msg.what){
-//                case UPDATE_TEXT:
-//                    //在这里进行UI更新操作
-//                    setContentView(R.layout.tess_two_layout);
-//                    Log.d("MainActivity","ScreenCA----handleMessage");
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//    };
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //获取MediaProjectionManager实例
+        //获取MediaProjectionManager(录屏)实例
         mMediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         setContentView(R.layout.activity_screen_capture);
@@ -107,7 +80,7 @@ public class ScreenCaptureActivity extends Activity {
         markSizeView.setmOnClickListener(new MarkSizeView.onClickListener() {
             @Override
             public void onConfirm(Rect markedArea) {
-                //点击截屏后的"V"--ic_done_white_36dp.png
+                //点击截屏后的对勾符号--ic_done_white_36dp.png
                 ScreenCaptureActivity.this.markedArea = new Rect(markedArea);
                 markSizeView.reset();
                 markSizeView.setUnmarkedColor(getResources().getColor(R.color.transparent));
@@ -116,7 +89,7 @@ public class ScreenCaptureActivity extends Activity {
             }
             @Override
              public void onCancel() {
-                //点击截屏后的"X"--ic_close_capture.png
+                //点击截屏后的叉符号--ic_close_capture.png
             }
             @Override
             public void onTouch() {
@@ -171,7 +144,6 @@ public class ScreenCaptureActivity extends Activity {
         //返回具有指定宽度和高度的可变位图。
         bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);  //从当前位置开始复制缓冲区中的像素，覆盖位图的像素。
-//        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
         bitmap = Bitmap.createBitmap(bitmap, markedArea.left, markedArea.top, markedArea.right - markedArea.left, markedArea.bottom - markedArea.top);
 
         if (bitmap != null) {
@@ -180,16 +152,23 @@ public class ScreenCaptureActivity extends Activity {
             //将截取的bitmap传递到ScreenTessTwo活动进行文字提取操作。
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] bytes=baos.toByteArray();
+            byte[] bytes = baos.toByteArray();
             final Bundle bundle = new Bundle();
             bundle.putByteArray("bitmap", bytes);
 
             //在此标记耗时操作开始：转换文字是一个耗时操作
             //开始更新UI(缓冲中....)
-            Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo_v1.class);
+            Intent intent = new Intent(ScreenCaptureActivity.this,ScreenTessTwo_v2.class);
             intent.putExtras(bundle);
             startActivity(intent);
             finishAndRemoveTask();
+
+            try {
+                baos.flush();
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -233,9 +212,6 @@ public class ScreenCaptureActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                Message message = new Message();
-//                message.what = UPDATE_TEXT;
-//                handler.sendMessage(message);
                 startCapture();
             }
         }).start();
@@ -246,9 +222,8 @@ public class ScreenCaptureActivity extends Activity {
     @Override
     public void onDestroy() {
         Log.d("MainActivity","ScreenCaptureActivity---onDestory");
-//        handler.removeCallbacks(runnable);
+
         tearDownMediaProjection();
-//        finishAndRemoveTask();
         super.onDestroy();
     }
 

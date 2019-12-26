@@ -1,13 +1,16 @@
 <resources>
     <string name="app_name">TTS</string>
-    <string name="describe">这是一个能将手机界面的文字转换为语音的软件。用户开启悬浮球，手机自动完成以下授权。</string>>
-    <string name="permission1">储存：修改或删除您的SD卡中的内容</string>
-    <string name="permission2">硬件控制：录音、控制震动</string>
-    <string name="permission3">系统工具：访问SD卡文件系统，在其他应用之上显示内容</string>
-    <string name="permission4">开发工具：测试对受保护存储空间的访问权限</string>
+    <string name="describe">这是一个能将手机界面的文字转换为语音的软件。具体操作如下：</string>>
+    <string name="permission1">step1：开启悬浮球</string>
+    <string name="permission2">step2：界面显示白色小球(如未显示，需用户自行开启顶层显示权限)，长按小球进行文字识别</string>
+    <string name="permission3">step3：界面弹出允许截屏选项，勾选同意</string>
+    <string name="permission4">step4：手指滑动选择需读取的文字区域，选中后区域变白色，将需要读取的文字完全框在白色区域内</string>
+    <string name="permission5">step5：手指抬起显示"✘"和"✔"，重新选择文字点"✘"，并重复step4；确认选中点"✔"；另：白色区域可移动和改变大小</string>
+    <string name="permission6">step6：用户点"✔"后软件进行文字的提取，无网络弹出"请连接网络"的提示，如成功提取在红色缓冲结束后自动进行朗读。</string>
     <string name="describe_name">描述：</string>
     <string name="version">TTS_ver1.0@Rindy</string>
 
-    <string name="add_friend">添加好友在这里哦</string>
-    <string name="nearby">查看附近的人</string>
+    <string name="add_friend">开启悬浮球</string>
+    <!--<string name="nearby">查看附近的人</string>-->
+    <string name="demo">操作演示</string>
 </resources>

@@ -1,1 +1,2 @@
-include ':app', ':myguideview'
+//include ':app', ':myguideview', ':myguideview_v2'
+include ':app'

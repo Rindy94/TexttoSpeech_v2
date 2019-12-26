@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <LinearLayout
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical">
+
         <FrameLayout
+            android:id="@+id/frame_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
                 android:background="@drawable/describe"
-                android:layout_weight="1">
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/setText"
                     android:layout_width="wrap_content"
@@ -34,6 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="25dp"
                     android:layout_weight="0.2"
+                    android:checked="false"
                     android:switchMinWidth="25dp"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="20dp"
@@ -41,62 +49,106 @@
                     android:track="@drawable/switch_track" />
             </LinearLayout>
         </FrameLayout>
+
         <FrameLayout
+            android:id="@+id/frame_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
                 android:layout_marginTop="25dp"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/describe"
+                android:orientation="vertical"
                 android:padding="20dp">
+
                 <TextView
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/describe_name"
-                    android:textSize="18dp"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:text="@string/describe"/>
+                    android:textSize="18dp" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="@string/permission1"/>
+                    android:text="@string/describe" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/permission2"/>
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission1" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/permission3"/>
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission2" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/permission4"/>
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission3" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission4" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission5" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/permission6" />
             </LinearLayout>
         </FrameLayout>
+        <!--<Button-->
+        <!--android:id="@+id/action_image"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="测试"/>-->
+        <!--<ImageButton-->
+        <!--android:id="@+id/action_image"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/ic_picture3"-->
+        <!--android:background="@color/transparent"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="20dp"/>-->
+    </LinearLayout>
 
-        <FrameLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/demo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/version"
-                android:textSize="15dp" />
-        </FrameLayout>
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:text="@string/demo"
+            android:textColor="@color/LightBule" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/version"
+            android:textSize="15dp" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

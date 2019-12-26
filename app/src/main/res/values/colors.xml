@@ -11,4 +11,6 @@
     <color name="transparent">#00000000</color>
     <color name="color_434933">#434933</color>
     <color name="color_white">#FFFFFF</color>
+    <color name="LightBule">#51bef5</color>
+    <color name="GrassBule">#0680be</color>
 </resources>

@@ -12,7 +12,7 @@ import com.TextToSpeech.rindyTextToSpeech.R;
 
 /**
  *绘制悬浮球:
- *      形式：
+ *      形式：实心圆形，外圆透明
  * @author: Rindy
  * @date: 2018/12/19 11:13
  **/

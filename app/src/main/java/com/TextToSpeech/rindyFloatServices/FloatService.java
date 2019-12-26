@@ -9,6 +9,7 @@ package com.TextToSpeech.rindyFloatServices;
  **/
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 
 import com.TextToSpeech.MainActivity;
 import com.TextToSpeech.rindyFloatBall.FloatView;
@@ -56,6 +58,7 @@ public class FloatService extends Service {
         notification =  builder.build();
         notification.flags = Notification.FLAG_AUTO_CANCEL|Notification.FLAG_ONGOING_EVENT;
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         notificationManager.notify(ID,notification);
         startForeground(ID,notification);
     }
